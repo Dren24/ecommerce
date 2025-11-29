@@ -9,26 +9,21 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id', 'grand_total', 'currency', 
-        'payment_method', 'payment_status', 
-        'shipping_amount', 'shipping_method', 
-        'notes', 'status'
-    ];
+    protected $guarded = ['id'];
 
-    // relationships
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function orderItems()
+
+    public function items()
     {
         return $this->hasMany(OrderItem::class);
     }
 
     public function address()
     {
-        return $this->hasOne(Address::class);
+        return $this->hasOne(address::class);
     }
 }
