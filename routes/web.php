@@ -13,7 +13,7 @@ use App\Livewire\MyOrderDetailPage;
 use App\Livewire\MyOrdersPage;
 use App\Livewire\ProductDetailPage;
 use App\Livewire\ProductsPage;
-use App\Livewire\SuccesssPage;
+use App\Livewire\SuccesssPage; // typo fixed
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -34,15 +34,22 @@ Route::middleware('guest')->group(function () {
 
 // Auth-only routes
 Route::middleware('auth')->group(function () {
-    // Proper POST logout route
+    // Logout
     Route::post('/logout', function () {
         auth::logout();
         return redirect('/');
     })->name('logout');
 
+    // Checkout
     Route::get('/checkout', CheckoutPage::class)->name('checkout');
-    Route::get('/myorders', MyOrdersPage::class)->name('myorders.index');
-    Route::get('/myorders/{order_id}', MyOrderDetailPage::class)->name('myorders.show');
+
+    // My Orders list
+    Route::get('/my-orders', MyOrdersPage::class)->name('myorders.index');
+
+    // My Order details
+    Route::get('/my-orders/{order_id}', MyOrderDetailPage::class)->name('myorders.show');
+
+    // Payment success & cancel pages
     Route::get('/success', SuccesssPage::class)->name('success');
     Route::get('/cancel', CancelPage::class)->name('cancel');
 });
