@@ -12,7 +12,6 @@
                         {{-- CATEGORIES --}}
                         <div class="p-4 mb-5 bg-white dark:bg-gray-900 border dark:border-gray-800">
                             <h2 class="text-2xl font-bold dark:text-gray-300">Categories</h2>
-
                             <div class="w-16 border-b border-blue-500 my-3"></div>
 
                             @foreach ($categories as $category)
@@ -51,7 +50,8 @@
                                 {{ Number::currency($priceRange ?? 0, 'PHP') }}
                             </div>
 
-                            <input type="range" wire:model.live="priceRange"
+                            <input type="range" 
+                                   wire:model.live="priceRange"
                                    max="50000" step="500"
                                    class="w-full mt-3">
                         </div>
@@ -61,7 +61,7 @@
                     {{-- RIGHT PRODUCT GRID --}}
                     <div class="w-full px-3 lg:w-3/4">
 
-                        {{-- SORT --}}
+                        {{-- SORT DROPDOWN --}}
                         <div class="flex justify-end mb-6">
                             <select wire:model.live="sort"
                                     class="p-2 bg-gray-100 dark:bg-gray-800 dark:text-gray-200">
@@ -77,14 +77,23 @@
                             @forelse ($products as $product)
 
                                 @php
-                                    $img = is_array($product->image) ? $product->image[0] : $product->image;
+                                    $img = is_array($product->image)
+                                        ? ($product->image[0] ?? null)
+                                        : $product->image;
+
+                                    $img = str_replace('products/', '', $img);
+
+                                    $imagePath = $img
+                                        ? asset('storage/products/' . $img)
+                                        : asset('noimage.png');
                                 @endphp
 
                                 <div class="border border-gray-300 dark:border-gray-700 rounded-md overflow-hidden">
 
                                     <a href="/products/{{ $product->slug }}">
-                                        <img src="{{ asset('storage/products/'.$img) }}"
-                                             class="w-full h-56 object-cover">
+                                        <img src="{{ $imagePath }}"
+                                             class="w-full h-56 object-cover"
+                                             onerror="this.src='/noimage.png'">
                                     </a>
 
                                     <div class="p-3">
@@ -92,8 +101,9 @@
                                             {{ $product->name }}
                                         </h3>
 
+                                        {{-- PRICE FIX --}}
                                         <p class="text-green-600 dark:text-green-400 text-lg mt-1">
-                                            {{ Number::currency($product->price ?? 0, 'PHP') }}
+                                            {{ Number::currency($product->selling_price ?? 0, 'PHP') }}
                                         </p>
                                     </div>
 

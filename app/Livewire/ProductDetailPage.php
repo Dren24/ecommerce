@@ -33,14 +33,14 @@ class ProductDetailPage extends Component
 
     public function addToCart($product_id)
     {
-        // FIX ❗ Correct function name. No "WithQty"
+        // Add product with quantity
         $total_count = CartManagement::addItemsToCart($product_id, $this->quantity);
 
-        // Update navbar cart count
+        // Update navbar count
         $this->dispatch('update-cart-count', total_count: $total_count)
             ->to(Navbar::class);
 
-        // FIX ❗ Updated Alert syntax to LivewireAlert v4
+        // Alert
         LivewireAlert::title('Success')
             ->text('Product added to cart successfully!')
             ->success()
@@ -53,8 +53,12 @@ class ProductDetailPage extends Component
     #[Title('Product Detail Page')]
     public function render()
     {
+        $product = Product::where('slug', $this->slug)->firstOrFail();
+
         return view('livewire.product-detail-page', [
-            'product' => Product::where('slug', $this->slug)->firstOrFail(),
+            'product' => $product,
+            // ADD PRICE FIX HERE
+            'price' => $product->selling_price ?? 0,
         ]);
     }
 }

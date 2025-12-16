@@ -21,8 +21,7 @@ class Product extends Model
         'part_number',
         'motorcycle_brand',
         'fit_to_model',
-        'cost_price',
-        'selling_price',
+        'price',            // ✔ FIXED
         'image',
         'is_active',
     ];
@@ -30,8 +29,7 @@ class Product extends Model
     protected $casts = [
         'image' => 'string',
         'is_active' => 'boolean',
-        'cost_price' => 'decimal:2',
-        'selling_price' => 'decimal:2',
+        'price' => 'decimal:2',   // ✔ FIXED
     ];
 
     public function category()

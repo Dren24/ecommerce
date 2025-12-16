@@ -33,7 +33,9 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
+
                 Group::make()->schema([
+
                     Section::make('Part Information')
                         ->schema([
                             TextInput::make('name')
@@ -63,10 +65,11 @@ class ProductResource extends Resource
                     Section::make('Image')
                         ->schema([
                             FileUpload::make('image')
-                                ->image()
                                 ->directory('products')
+                                ->image()
                                 ->label('Part Image')
                         ]),
+
                 ])->columnSpan(2),
 
                 Group::make()->schema([
@@ -74,31 +77,23 @@ class ProductResource extends Resource
                     Section::make('Inventory Details')
                         ->schema([
                             TextInput::make('quantity')
-                                ->label('Quantity')
                                 ->numeric()
                                 ->required()
                                 ->default(0),
 
                             TextInput::make('minimum_quantity')
-                                ->label('Minimum Stock Alert')
                                 ->numeric()
                                 ->default(1),
 
                             TextInput::make('part_number')
                                 ->label('Part Number')
-                                ->maxLength(255)
                                 ->nullable(),
                         ]),
 
                     Section::make('Pricing')
                         ->schema([
-                            TextInput::make('cost_price')
-                                ->label('Cost Price')
-                                ->numeric()
-                                ->prefix('₱'),
-
-                            TextInput::make('selling_price')
-                                ->label('Selling Price')
+                            TextInput::make('price')        // ✔ FIXED
+                                ->label('Price')
                                 ->numeric()
                                 ->prefix('₱')
                                 ->required(),
@@ -107,34 +102,29 @@ class ProductResource extends Resource
                     Section::make('Fitment Details')
                         ->schema([
                             TextInput::make('motorcycle_brand')
-                                ->label('Motorcycle Brand')
-                                ->placeholder('e.g. Honda, Yamaha, Suzuki'),
+                                ->placeholder('e.g. Honda'),
 
                             TextInput::make('fit_to_model')
-                                ->label('Model')
-                                ->placeholder('e.g. Mio i125, Raider R150'),
+                                ->placeholder('e.g. Mio i125'),
                         ]),
 
                     Section::make('Associations')
                         ->schema([
                             Select::make('category_id')
-                                ->label('Category')
-                                ->required()
                                 ->relationship('category', 'name')
+                                ->required()
                                 ->searchable()
                                 ->preload(),
 
                             Select::make('brand_id')
-                                ->label('Parts Brand')
-                                ->required()
                                 ->relationship('brand', 'name')
+                                ->required()
                                 ->searchable()
                                 ->preload(),
 
                             Select::make('supplier_id')
-                                ->label('Supplier')
-                                ->nullable()
                                 ->relationship('supplier', 'name')
+                                ->nullable()
                                 ->searchable()
                                 ->preload(),
                         ]),
@@ -145,40 +135,34 @@ class ProductResource extends Resource
                                 ->label('Active')
                                 ->default(true),
                         ]),
+                ])->columnSpan(1),
 
-                ])->columnSpan(1)
-
-            ])->columns(3);
+            ])
+            ->columns(3);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('Part Name')->searchable(),
+                TextColumn::make('name')->searchable(),
+
                 TextColumn::make('category.name')->label('Category')->searchable(),
+
                 TextColumn::make('brand.name')->label('Brand')->searchable(),
 
-                TextColumn::make('quantity')
-                    ->label('Qty')
-                    ->sortable(),
+                TextColumn::make('quantity')->sortable(),
 
-                TextColumn::make('minimum_quantity')
-                    ->label('Min')
-                    ->sortable(),
+                TextColumn::make('minimum_quantity')->sortable(),
 
-                TextColumn::make('selling_price')
+                TextColumn::make('price')            // ✔ FIXED
                     ->label('Price')
                     ->money('PHP')
                     ->sortable(),
 
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
-                    ->boolean(),
+                Tables\Columns\IconColumn::make('is_active')->boolean(),
 
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable(),
+                TextColumn::make('created_at')->dateTime()->sortable(),
             ])
             ->actions([
                 ActionGroup::make([
@@ -191,7 +175,6 @@ class ProductResource extends Resource
                 Tables\Actions\DeleteBulkAction::make()
             ]);
     }
-
 
     public static function getRelations(): array
     {

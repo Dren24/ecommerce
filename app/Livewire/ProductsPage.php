@@ -7,7 +7,7 @@ use App\Livewire\Partials\Navbar;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
-use Jantinnerezo\LivewireAlert\Facades\LivewireAlert; // Facade
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
@@ -36,21 +36,20 @@ class ProductsPage extends Component
     #[Url()]
     public $sort = 'latest';
 
-    // Add products to cart
+    // Add to Cart
     public function addToCart($product_id)
     {
         $total_count = CartManagement::addItemsToCart($product_id);
 
-        // Update cart count in Navbar
-        $this->dispatch('update-cart-count', total_count: $total_count)->to(Navbar::class);
+        $this->dispatch('update-cart-count', total_count: $total_count)
+            ->to(Navbar::class);
 
-        // LivewireAlert v4 (Facade)
         LivewireAlert::title('Success')
             ->text('Product added to cart successfully!')
             ->success()
             ->toast()
-            ->position('bottom-end')
             ->timer(3000)
+            ->position('bottom-end')
             ->show();
     }
 
@@ -58,28 +57,34 @@ class ProductsPage extends Component
     {
         $products = Product::query()->where('is_active', true);
 
+        // Filter by Categories
         if (!empty($this->selectedCategories)) {
             $products->whereIn('category_id', $this->selectedCategories);
         }
 
+        // Filter by Brands
         if (!empty($this->selectedBrands)) {
             $products->whereIn('brand_id', $this->selectedBrands);
         }
 
+        // Featured
         if ($this->featured) {
             $products->where('is_featured', true);
         }
 
+        // On Sale
         if ($this->onSale) {
             $products->where('on_sale', true);
         }
 
-        if ($this->priceRange) {
-            $products->whereBetween('price', [0, $this->priceRange]);
+        // PRICE FILTER FIX — USE selling_price
+        if ($this->priceRange > 0) {
+            $products->whereBetween('selling_price', [0, $this->priceRange]);
         }
 
+        // SORT FIX — USE selling_price
         if ($this->sort == 'price') {
-            $products->orderBy('price');
+            $products->orderBy('selling_price', 'asc');
         }
 
         if ($this->sort == 'latest') {
@@ -89,7 +94,7 @@ class ProductsPage extends Component
         return view('livewire.products-page', [
             'products' => $products->paginate(4),
             'brands' => Brand::where('is_active', 1)->get(['id', 'name', 'slug']),
-            'categories' => Category::query()->where('is_active', 1)->get(['id', 'name', 'slug']),
+            'categories' => Category::where('is_active', 1)->get(['id', 'name', 'slug']),
         ]);
     }
 }

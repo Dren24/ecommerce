@@ -5,41 +5,60 @@
             <div class="max-w-6xl px-4 py-4 mx-auto lg:py-8 md:px-6">
                 <div class="flex flex-wrap -mx-4">
 
-                    {{-- IMAGE SECTION --}}
+                    {{-- ========================================= --}}
+                    {{--                IMAGE SECTION               --}}
+                    {{-- ========================================= --}}
                     @php
-                        $main = is_array($product->image) ? $product->image[0] : $product->image;
+                        // MAIN IMAGE (single string)
+                        $mainImage = $product->image;
+
+                        // Clean duplicate folder
+                        $mainImage = str_replace('products/', '', $mainImage);
+
+                        $mainImageUrl = $mainImage
+                            ? asset('storage/products/' . $mainImage)
+                            : asset('noimage.png');
                     @endphp
 
                     <div class="w-full mb-8 md:w-1/2 md:mb-0"
-                         x-data="{ mainImage: '{{ asset('storage/products/'.$main) }}' }">
+                        x-data="{ mainImage: '{{ $mainImageUrl }}' }">
 
-                        <div class="sticky top-0 z-50 overflow-hidden">
+                        <div class="sticky top-0 overflow-hidden">
+
+                            {{-- MAIN IMAGE --}}
                             <div class="relative mb-6 lg:mb-10 lg:h-2/4">
                                 <img x-bind:src="mainImage"
-                                     class="object-cover w-full lg:h-full">
+                                     class="object-cover w-full lg:h-full"
+                                     onerror="this.src='/noimage.png'">
                             </div>
 
-                            {{-- THUMBNAILS --}}
+                            {{-- **THUMBNAIL — ONLY ONE IMAGE (NO LOOP)** --}}
                             <div class="flex-wrap hidden md:flex">
-                                @foreach ((array) $product->image as $img)
-                                    <div class="w-1/2 p-2 sm:w-1/4"
-                                         x-on:click="mainImage='{{ asset('storage/products/'.$img) }}'">
-                                        <img src="{{ asset('storage/products/'.$img) }}"
-                                             class="object-cover w-full lg:h-20 cursor-pointer hover:border hover:border-blue-500">
-                                    </div>
-                                @endforeach
+
+                                @php
+                                    $thumbUrl = $mainImageUrl;
+                                @endphp
+
+                                <div class="w-1/2 p-2 sm:w-1/4"
+                                     x-on:click="mainImage='{{ $thumbUrl }}'">
+
+                                    <img src="{{ $thumbUrl }}"
+                                         class="object-cover w-full lg:h-20 cursor-pointer hover:border hover:border-blue-500"
+                                         onerror="this.src='/noimage.png'">
+                                </div>
+
                             </div>
 
                         </div>
-
                     </div>
 
-                    {{-- PRODUCT INFO --}}
+                    {{-- ========================================= --}}
+                    {{--            PRODUCT INFORMATION             --}}
+                    {{-- ========================================= --}}
                     <div class="w-full px-4 md:w-1/2">
-
                         <div class="lg:pl-20">
 
-                            {{-- NAME --}}
+                            {{-- PRODUCT NAME --}}
                             <h2 class="text-3xl md:text-4xl font-bold dark:text-gray-300 mb-4">
                                 {{ $product->name }}
                             </h2>
@@ -56,7 +75,9 @@
 
                             {{-- QUANTITY --}}
                             <div class="w-32 mt-8">
-                                <label class="text-lg font-semibold text-gray-700 dark:text-gray-400">Quantity</label>
+                                <label class="text-lg font-semibold text-gray-700 dark:text-gray-400">
+                                    Quantity
+                                </label>
 
                                 <div class="relative flex w-full h-10 mt-3">
                                     <button wire:click="decrementQty"
@@ -65,7 +86,7 @@
                                     </button>
 
                                     <input type="number" readonly wire:model="quantity"
-                                           class="flex-1 bg-gray-300 dark:bg-gray-900 text-center">
+                                        class="flex-1 bg-gray-300 dark:bg-gray-900 text-center">
 
                                     <button wire:click="incrementQty"
                                         class="w-10 bg-gray-300 dark:bg-gray-900 rounded-r hover:bg-gray-400">
@@ -84,7 +105,6 @@
                             </div>
 
                         </div>
-
                     </div>
 
                 </div>

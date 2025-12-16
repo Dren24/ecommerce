@@ -1,5 +1,6 @@
 <div>
-    {{-- Hero section start --}}
+
+{{-- Hero section start --}}
 <div class="w-full h-screen bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 py-10 px-4 sm:px-6 lg:px-8 mx-auto">
     <div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -64,7 +65,7 @@
 {{-- Hero section end --}}
 
 
-    {{-- Brand Section Start --}}
+{{-- Brand Section Start --}}
 <section class="py-20 bg-slate-100 dark:bg-slate-900">
     <div class="max-w-xl mx-auto text-center">
         <h1 class="text-5xl font-bold text-gray-900 dark:text-gray-200">
@@ -87,15 +88,22 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
             @foreach ($brands as $brand)
+
+            @php
+                $brandImg = str_replace(['brands/', 'products/'], '', $brand->image);
+                $brandImg = asset('storage/brands/' . $brandImg);
+            @endphp
+
             <div 
                 wire:key="{{ $brand->id }}"
                 class="group bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 overflow-hidden"
             >
                 <a href="/products?selectedBrands[0]={{ $brand->id }}">
                     <div class="overflow-hidden">
-                        <img src="{{ url('storage', $brand->image) }}"
+                        <img src="{{ $brandImg }}"
                              class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                             alt="Brand Logo">
+                             alt="Brand Logo"
+                             onerror="this.src='/noimage.png'">
                     </div>
 
                     <div class="p-5 text-center">
@@ -109,6 +117,7 @@
                     </div>
                 </a>
             </div>
+
             @endforeach
 
         </div>
@@ -116,7 +125,8 @@
 </section>
 {{-- Brand Section End --}}
 
-    {{-- Category Section Start --}}
+
+{{-- Category Section Start --}}
 <section class="py-20 bg-slate-100 dark:bg-slate-900">
     <div class="max-w-xl mx-auto text-center">
         <h1 class="text-5xl font-bold text-gray-900 dark:text-gray-200">
@@ -139,14 +149,21 @@
         <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
             @foreach ($category as $categories)
+
+            @php
+                $catImg = str_replace(['categories/', 'products/'], '', $categories->image);
+                $catImg = asset('storage/categories/' . $catImg);
+            @endphp
+
                 <a wire:key="{{ $categories->id }}"
                     href="/products?selectedCategories[0]={{ $categories->id }}"
                     class="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 
                            rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 p-5 flex items-center gap-4">
 
-                    <img src="{{ url('storage', $categories->image) }}"
+                    <img src="{{ $catImg }}"
                          class="h-16 w-16 rounded-lg object-cover group-hover:scale-105 transition"
-                         alt="Category Image">
+                         alt="Category Image"
+                         onerror="this.src='/noimage.png'">
 
                     <div class="flex-1">
                         <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 group-hover:text-blue-500 transition">
@@ -165,7 +182,8 @@
 </section>
 {{-- Category Section End --}}
 
-    {{-- Customer Reviews Section Start --}}
+
+{{-- Customer Reviews Section --}}
 <section class="py-20 bg-white dark:bg-gray-900">
     <div class="max-w-xl mx-auto text-center">
         <h1 class="text-5xl font-bold text-gray-900 dark:text-gray-200">
@@ -184,113 +202,43 @@
     </div>
 
     <div class="max-w-6xl mx-auto mt-14 px-4 grid md:grid-cols-2 gap-8">
-        
-        {{-- Review Card --}}
-        <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition">
-            <div class="flex items-center gap-4">
-                <img src="https://i.postimg.cc/rF6G0Dh9/pexels-emmy-e-2381069.jpg" 
-                     class="w-14 h-14 rounded-full object-cover">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-200">Adren Roy</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Rider / Web Designer</p>
-                </div>
-            </div>
 
-            <p class="mt-4 text-gray-600 dark:text-gray-400">
-                RevnoParts never disappoints. The brake kit I ordered was high quality and arrived fast. Highly recommended!
-            </p>
+        {{-- Review Cards --}}
+        @include('partials.review-card', [
+            'name' => 'Adren Roy',
+            'role' => 'Rider / Web Designer',
+            'image' => 'https://i.postimg.cc/rF6G0Dh9/pexels-emmy-e-2381069.jpg',
+            'text' => 'RevnoParts never disappoints. The brake kit I ordered was high quality and arrived fast. Highly recommended!',
+            'rating' => 5
+        ])
 
-            <div class="mt-4 flex items-center gap-1">
-                @for ($i = 0; $i < 5; $i++)
-                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor">
-                        <polygon points="9.9,1.1 12.2,6.9 18.4,7.3 13.6,11.3 15.2,17.4 9.9,14.1 4.6,17.4 6.2,11.3 1.4,7.3 7.6,6.9"></polygon>
-                    </svg>
-                @endfor
-                <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">5.0</span>
-            </div>
-        </div>
+        @include('partials.review-card', [
+            'name' => 'Sonira Roy',
+            'role' => 'Manager',
+            'image' => 'https://i.postimg.cc/q7pv50zT/pexels-edmond-dant-s-4342352.jpg',
+            'text' => 'Excellent customer service and authentic motorcycle parts. I’m definitely ordering again.',
+            'rating' => 5
+        ])
 
-        {{-- Review Card --}}
-        <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition">
-            <div class="flex items-center gap-4">
-                <img src="https://i.postimg.cc/q7pv50zT/pexels-edmond-dant-s-4342352.jpg" 
-                     class="w-14 h-14 rounded-full object-cover">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-200">Sonira Roy</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Manager</p>
-                </div>
-            </div>
+        @include('partials.review-card', [
+            'name' => 'William Harry',
+            'role' => 'Marketing Officer',
+            'image' => 'https://i.postimg.cc/JzmrHQmk/pexels-pixabay-220453.jpg',
+            'text' => 'The rims I ordered are solid! Good price and fast shipping. RevnoParts is my go-to shop now.',
+            'rating' => 4
+        ])
 
-            <p class="mt-4 text-gray-600 dark:text-gray-400">
-                Excellent customer service and authentic motorcycle parts. I’m definitely ordering again.
-            </p>
-
-            <div class="mt-4 flex items-center gap-1">
-                @for ($i = 0; $i < 5; $i++)
-                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor">
-                        <polygon points="9.9,1.1 12.2,6.9 18.4,7.3 13.6,11.3 15.2,17.4 9.9,14.1 4.6,17.4 6.2,11.3 1.4,7.3 7.6,6.9"></polygon>
-                    </svg>
-                @endfor
-                <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">5.0</span>
-            </div>
-        </div>
-
-        {{-- Review Card --}}
-        <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition">
-            <div class="flex items-center gap-4">
-                <img src="https://i.postimg.cc/JzmrHQmk/pexels-pixabay-220453.jpg" 
-                     class="w-14 h-14 rounded-full object-cover">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-200">William Harry</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Marketing Officer</p>
-                </div>
-            </div>
-
-            <p class="mt-4 text-gray-600 dark:text-gray-400">
-                The rims I ordered are solid! Good price and fast shipping. RevnoParts is my go-to shop now.
-            </p>
-
-            <div class="mt-4 flex items-center gap-1">
-                @for ($i = 0; $i < 4; $i++)
-                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor">
-                        <polygon points="9.9,1.1 12.2,6.9 18.4,7.3 13.6,11.3 15.2,17.4 9.9,14.1 4.6,17.4 6.2,11.3 1.4,7.3 7.6,6.9"></polygon>
-                    </svg>
-                @endfor
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor">
-                    <polygon points="9.9,1.1 12.2,6.9 18.4,7.3 13.6,11.3 15.2,17.4 9.9,14.1 4.6,17.4 6.2,11.3 1.4,7.3 7.6,6.9"></polygon>
-                </svg>
-                <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">4.0</span>
-            </div>
-        </div>
-
-        {{-- Review Card --}}
-        <div class="p-6 bg-gray-50 dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition">
-            <div class="flex items-center gap-4">
-                <img src="https://i.postimg.cc/4NMZPYdh/pexels-dinielle-de-veyra-4195342.jpg" 
-                     class="w-14 h-14 rounded-full object-cover">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-200">James Jack</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Programmer</p>
-                </div>
-            </div>
-
-            <p class="mt-4 text-gray-600 dark:text-gray-400">
-                High-quality mufflers at a good price. My bike sounds and performs way better. 10/10!
-            </p>
-
-            <div class="mt-4 flex items-center gap-1">
-                @for ($i = 0; $i < 5; $i++)
-                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor">
-                        <polygon points="9.9,1.1 12.2,6.9 18.4,7.3 13.6,11.3 15.2,17.4 9.9,14.1 4.6,17.4 6.2,11.3 1.4,7.3 7.6,6.9"></polygon>
-                    </svg>
-                @endfor
-                <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">5.0</span>
-            </div>
-        </div>
+        @include('partials.review-card', [
+            'name' => 'James Jack',
+            'role' => 'Programmer',
+            'image' => 'https://i.postimg.cc/4NMZPYdh/pexels-dinielle-de-veyra-4195342.jpg',
+            'text' => 'High-quality mufflers at a good price. My bike sounds and performs way better. 10/10!',
+            'rating' => 5
+        ])
 
     </div>
 
 </section>
-{{-- Customer Reviews Section End --}}
+{{-- Customer Reviews End --}}
 
 </div>
